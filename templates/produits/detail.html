@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{{ produit.nom }} — Ma Superette{% endblock %}
+
+{% block content %}
+<div class="site-container detail-wrap">
+
+  <div class="breadcrumb-custom" data-aos="fade-right">
+    <a href="{% url 'produits:liste' %}">{% trans "Boutique" %}</a>
+    <span class="bc-sep">/</span>
+    <a href="{{ produit.categorie.get_absolute_url }}">{{ produit.categorie.nom }}</a>
+    <span class="bc-sep">/</span>
+    <span>{{ produit.nom }}</span>
+  </div>
+
+  <div class="row g-4 g-lg-5">
+
+    <div class="col-md-5" data-aos="fade-right">
+      <div class="detail-img-box">
+        {% if produit.image %}
+        <img src="{{ produit.image.url }}" alt="{{ produit.nom }}">
+        {% else %}
+        <div class="detail-img-placeholder">{{ produit.categorie.icone }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="col-md-7" data-aos="fade-left">
+      <div class="detail-info">
+
+        <span class="detail-tag">{{ produit.categorie.icone }} {{ produit.categorie.nom }}</span>
+        <h1 class="detail-title">{{ produit.nom }}</h1>
+        <div class="detail-price">{{ produit.prix }}&nbsp;{{ currency }}</div>
+
+        {% if not produit.en_stock %}
+        <span class="stock-chip chip-out"><i class="bi bi-x-circle"></i> {% trans "Rupture de stock" %}</span>
+        {% elif produit.stock <= 5 %}
+        <span class="stock-chip chip-low"><i class="bi bi-exclamation-circle"></i> {% blocktrans with n=produit.stock %}Plus que {{ n }} en stock{% endblocktrans %}</span>
+        {% else %}
+        <span class="stock-chip chip-ok"><i class="bi bi-check-circle"></i> {% trans "En stock" %}</span>
+        {% endif %}
+
+        {% if produit.description %}
+        <hr class="detail-divider">
+        <p class="detail-desc">{{ produit.description|linebreaks }}</p>
+        {% endif %}
+
+        <hr class="detail-divider">
+
+        {% if produit.en_stock %}
+        <form method="post" action="{% url 'panier:ajouter' produit.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div class="qty-control">
+              <button type="button" class="qty-btn" data-delta="-1">−</button>
+              <input type="number" name="quantite" value="1" min="1" max="{{ produit.stock }}"
+                     class="qty-num" id="qty-input">
+              <button type="button" class="qty-btn" data-delta="1">+</button>
+            </div>
+            <button type="submit" class="btn-primary">
+              <i class="bi bi-bag-plus"></i> {% trans "Ajouter au panier" %}
+            </button>
+          </div>
+        </form>
+        {% else %}
+        <button class="btn-primary" disabled>
+          <i class="bi bi-x-circle"></i> {% trans "Produit indisponible" %}
+        </button>
+        {% endif %}
+
+        <div class="mt-4">
+          <a href="{% url 'produits:liste' %}" class="btn-outline">
+            <i class="bi bi-arrow-left"></i> {% trans "Continuer mes achats" %}
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

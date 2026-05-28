@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% if categorie_active %}{{ categorie_active.nom }} — {% endif %}Ma Superette{% endblock %}
+
+{% block content %}
+
+{% if not categorie_active %}
+<!-- ── Hero ───────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text" data-aos="fade-right">
+      <span class="hero-eyebrow">🌿 {% trans "Fraîcheur & Qualité" %}</span>
+      <h1>{% trans "Votre épicerie" %}<br><em>{% trans "de quartier" %}</em></h1>
+      <p class="hero-desc">
+        {% trans "Légumes frais, conserves sélectionnées, produits ménagers et bien plus — avec soin, chaque jour." %}
+      </p>
+      <a href="#produits" class="btn-or">
+        <i class="bi bi-arrow-down-circle"></i> {% trans "Découvrir les produits" %}
+      </a>
+    </div>
+
+    <div class="hero-visual" data-aos="fade-left" data-aos-delay="200">
+      <div class="hero-mosaic">
+        <div class="hero-tile"><span class="hero-tile-emoji">🥦</span><span>{% trans "Légumes frais" %}</span></div>
+        <div class="hero-tile"><span class="hero-tile-emoji">🍅</span><span>{% trans "Fruits de saison" %}</span></div>
+        <div class="hero-tile"><span class="hero-tile-emoji">🥫</span><span>{% trans "Conserves" %}</span></div>
+        <div class="hero-tile"><span class="hero-tile-emoji">🧹</span><span>{% trans "Maison" %}</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ── Carousel ───────────────────────────────── -->
+{% if not categorie_active and slides and not q %}
+<section class="carousel-section">
+  <div id="carouselSuperette" class="carousel slide" data-bs-ride="carousel" data-bs-interval="1000">
+
+    <div class="carousel-indicators">
+      {% for slide in slides %}
+      <button type="button" data-bs-target="#carouselSuperette" data-bs-slide-to="{{ forloop.counter0 }}"
+              {% if forloop.first %}class="active" aria-current="true"{% endif %}
+              aria-label="Slide {{ forloop.counter }}"></button>
+      {% endfor %}
+    </div>
+
+    <div class="carousel-inner">
+      {% for slide in slides %}
+      <div class="carousel-item {% if forloop.first %}active{% endif %}">
+        <img src="{{ slide.image.url }}" class="carousel-img" alt="{{ slide.titre }}">
+        <div class="carousel-overlay"></div>
+        <div class="carousel-caption-custom">
+          {% if slide.badge %}
+          <span class="carousel-badge">{{ slide.badge }}</span>
+          {% endif %}
+          <h2 class="carousel-titre">{{ slide.titre }}</h2>
+          {% if slide.sous_titre %}
+          <p class="carousel-sous-titre">{{ slide.sous_titre }}</p>
+          {% endif %}
+          {% if slide.lien %}
+          <a href="{{ slide.lien }}" class="carousel-cta">
+            {{ slide.lien_texte|default:"Découvrir" }}
+            <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if slides|length > 1 %}
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselSuperette" data-bs-slide="prev">
+      <span class="carousel-ctrl-icon"><i class="bi bi-chevron-left"></i></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselSuperette" data-bs-slide="next">
+      <span class="carousel-ctrl-icon"><i class="bi bi-chevron-right"></i></span>
+    </button>
+    {% endif %}
+
+  </div>
+</section>
+{% endif %}
+
+<!-- ── Products section ───────────────────────── -->
+<div class="site-container section-pad" id="produits">
+
+  {% if categorie_active %}
+  <div class="d-flex align-items-center gap-3 mb-4" data-aos="fade-right">
+    <a href="{% url 'produits:liste' %}" class="btn-outline">
+      <i class="bi bi-arrow-left"></i>
+    </a>
+    <div>
+      <h1 class="section-title mb-0">{{ categorie_active.icone }} {{ categorie_active.nom }}</h1>
+      <span class="section-count">{{ produits.paginator.count }} {% trans "produit(s)" %}</span>
+    </div>
+  </div>
+  {% else %}
+  <div class="section-header" data-aos="fade-up">
+    <span class="section-label">{% trans "Notre sélection" %}</span>
+    {% if q %}
+    <h2 class="section-title">{% blocktrans with q=q %}Résultats pour « {{ q }} »{% endblocktrans %}</h2>
+    {% else %}
+    <h2 class="section-title">{% trans "Tous les produits" %}</h2>
+    {% endif %}
+    <p class="section-count">{{ produits.paginator.count }} {% trans "produit(s) disponible(s)" %}</p>
+  </div>
+  {% endif %}
+
+  <!-- Search bar -->
+  <form method="get" action="{% url 'produits:liste' %}" class="search-bar" data-aos="fade-up" data-aos-delay="50">
+    <i class="bi bi-search search-icon"></i>
+    <input type="search" name="q" value="{{ q }}" placeholder="{% trans 'Rechercher un produit…' %}" class="search-input" autocomplete="off">
+    {% if q %}
+    <a href="{% if categorie_active %}{{ categorie_active.get_absolute_url }}{% else %}{% url 'produits:liste' %}{% endif %}" class="search-clear" title="{% trans 'Effacer' %}">
+      <i class="bi bi-x-lg"></i>
+    </a>
+    {% endif %}
+    <button type="submit" class="search-submit">{% trans "Rechercher" %}</button>
+  </form>
+
+  <!-- Category pills -->
+  <div class="cat-scroll" data-aos="fade-up" data-aos-delay="100">
+    <a href="{% url 'produits:liste' %}" class="cat-pill {% if not categorie_active %}actif{% endif %}">
+      <i class="bi bi-grid-3x3-gap"></i> {% trans "Tout" %}
+    </a>
+    {% for cat in categories %}
+    <a href="{{ cat.get_absolute_url }}" class="cat-pill {% if categorie_active.slug == cat.slug %}actif{% endif %}">
+      {{ cat.icone }} {{ cat.nom }}
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- Product grid -->
+  {% if produits %}
+  <div class="row g-3 g-md-4">
+    {% for produit in produits %}
+    <div class="col-6 col-md-4 col-lg-3"
+         data-aos="fade-up"
+         data-aos-delay="{% if forloop.counter0 == 1 %}100{% elif forloop.counter0 == 2 %}200{% elif forloop.counter0 == 3 %}300{% else %}0{% endif %}">
+      <div class="product-card">
+
+        <div class="product-img-wrap">
+          <a href="{{ produit.get_absolute_url }}">
+            {% if produit.image %}
+            <img src="{{ produit.image.url }}" alt="{{ produit.nom }}">
+            {% else %}
+            <div class="product-placeholder">{{ produit.categorie.icone }}</div>
+            {% endif %}
+          </a>
+
+          {% if not produit.en_stock %}
+          <span class="img-badge img-badge-rupture">{% trans "Rupture" %}</span>
+          {% elif produit.stock <= 5 %}
+          <span class="img-badge img-badge-faible">{% blocktrans with n=produit.stock %}Plus que {{ n }}{% endblocktrans %}</span>
+          {% endif %}
+
+          {% if produit.en_stock %}
+          <div class="product-overlay d-none d-md-block">
+            <form method="post" action="{% url 'panier:ajouter' produit.pk %}">
+              {% csrf_token %}
+              <input type="hidden" name="quantite" value="1">
+              <input type="hidden" name="next" value="{{ request.path }}">
+              <button type="submit" class="btn-add-overlay">
+                <i class="bi bi-bag-plus"></i> {% trans "Ajouter au panier" %}
+              </button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="product-body">
+          <div class="product-cat">{{ produit.categorie.nom }}</div>
+          <h3 class="product-name">
+            <a href="{{ produit.get_absolute_url }}">{{ produit.nom }}</a>
+          </h3>
+          <div class="product-foot">
+            <span class="product-price">{{ produit.prix }}&nbsp;{{ currency }}</span>
+            {% if produit.en_stock %}
+            <form method="post" action="{% url 'panier:ajouter' produit.pk %}" class="d-md-none">
+              {% csrf_token %}
+              <input type="hidden" name="quantite" value="1">
+              <input type="hidden" name="next" value="{{ request.path }}">
+              <button type="submit" class="btn-add-sm"><i class="bi bi-plus"></i></button>
+            </form>
+            {% else %}
+            <span class="img-badge img-badge-rupture" style="position:static;font-size:.68rem;">N/D</span>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-state" data-aos="fade-up">
+    <span class="empty-icon">{% if q %}🔍{% else %}📦{% endif %}</span>
+    {% if q %}
+    <h3>{% blocktrans with q=q %}Aucun résultat pour « {{ q }} »{% endblocktrans %}</h3>
+    <p class="mb-4">{% trans "Essayez avec un autre mot-clé." %}</p>
+    <a href="{% url 'produits:liste' %}" class="btn-or" style="display:inline-flex;">{% trans "Voir tous les produits" %}</a>
+    {% else %}
+    <h3>{% trans "Aucun produit disponible" %}</h3>
+    <p class="mb-4">{% trans "Cette catégorie ne contient pas encore de produits." %}</p>
+    <a href="{% url 'produits:liste' %}" class="btn-or" style="display:inline-flex;">{% trans "Voir tous les produits" %}</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Pagination -->
+  {% if produits.has_other_pages %}
+  <nav class="pagination-wrap" data-aos="fade-up">
+    <div class="pagination-inner">
+
+      {% if produits.has_previous %}
+      <a href="?{% if q %}q={{ q }}&{% endif %}page={{ produits.previous_page_number }}" class="page-btn">
+        <i class="bi bi-chevron-left"></i>
+      </a>
+      {% else %}
+      <span class="page-btn disabled"><i class="bi bi-chevron-left"></i></span>
+      {% endif %}
+
+      {% for num in produits.paginator.page_range %}
+        {% if num == produits.number %}
+        <span class="page-btn active">{{ num }}</span>
+        {% else %}
+        <a href="?{% if q %}q={{ q }}&{% endif %}page={{ num }}" class="page-btn">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if produits.has_next %}
+      <a href="?{% if q %}q={{ q }}&{% endif %}page={{ produits.next_page_number }}" class="page-btn">
+        <i class="bi bi-chevron-right"></i>
+      </a>
+      {% else %}
+      <span class="page-btn disabled"><i class="bi bi-chevron-right"></i></span>
+      {% endif %}
+
+    </div>
+    <p class="pagination-info">
+      {% blocktrans with cur=produits.number total=produits.paginator.num_pages %}Page {{ cur }} sur {{ total }}{% endblocktrans %}
+      &nbsp;·&nbsp; {{ produits.paginator.count }} {% trans "produit(s)" %}
+    </p>
+  </nav>
+  {% endif %}
+
+</div>
+{% endblock %}

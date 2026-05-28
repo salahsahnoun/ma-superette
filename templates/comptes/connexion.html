@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Connexion" %} — Ma Superette{% endblock %}
+
+{% block content %}
+<div class="site-container" style="padding-top:4rem;padding-bottom:6rem;">
+  <div style="max-width:440px;margin:0 auto;">
+
+    <!-- Header -->
+    <div class="text-center mb-4" data-aos="fade-down">
+      <div style="width:64px;height:64px;background:var(--vert-fonce);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;font-size:1.6rem;">🔑</div>
+      <h1 style="font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--vert-fonce);margin-bottom:.3rem;">{% trans "Connexion" %}</h1>
+      <p style="color:var(--gris);font-size:.9rem;">{% trans "Retrouvez vos commandes et votre historique." %}</p>
+    </div>
+
+    <!-- Form card -->
+    <div class="form-card" data-aos="fade-up">
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="field-label" for="id_username">{{ form.username.label }}</label>
+          {{ form.username }}
+        </div>
+
+        <div class="mb-4">
+          <label class="field-label" for="id_password">{{ form.password.label }}</label>
+          {{ form.password }}
+        </div>
+
+        {% if form.errors %}
+        <div style="background:#FEE2E2;color:#991B1B;padding:10px 14px;border-radius:var(--r-sm);font-size:.84rem;margin-bottom:1rem;">
+          {% trans "Identifiant ou mot de passe incorrect." %}
+        </div>
+        {% endif %}
+
+        {% if next %}
+        <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
+
+        <button type="submit" class="btn-primary w-100" style="justify-content:center;">
+          <i class="bi bi-box-arrow-in-right"></i> {% trans "Se connecter" %}
+        </button>
+      </form>
+
+    </div>
+
+    <p class="text-center mt-3" style="font-size:.87rem;color:var(--gris);">
+      {% trans "Pas encore de compte ?" %}
+      <a href="{% url 'comptes:inscription' %}" style="color:var(--vert);font-weight:600;">{% trans "S'inscrire" %}</a>
+    </p>
+
+  </div>
+</div>
+{% endblock %}

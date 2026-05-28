@@ -1,0 +1,20 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block submit_buttons_bottom %}
+{{ block.super }}
+
+<div style="margin-top:1.5rem;padding:1.2rem 1.5rem;background:#F7F4EE;border-radius:10px;border:1px solid #E0D8CC;">
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+    <div>
+      <strong style="color:#1B3829;font-size:.9rem;">📱 Tester la configuration</strong><br>
+      <span style="color:#7A7A7A;font-size:.8rem;">Envoie un message WhatsApp de test au numéro configuré.</span>
+    </div>
+    <a href="{% url 'admin:commandes_confignotification_tester' %}"
+       style="background:#25D366;color:#fff;padding:9px 20px;border-radius:8px;font-size:.85rem;
+              font-weight:700;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;">
+      📤 Envoyer un message test
+    </a>
+  </div>
+</div>
+{% endblock %}

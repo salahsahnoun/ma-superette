@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Créer un compte" %} — Ma Superette{% endblock %}
+
+{% block content %}
+<div class="site-container" style="padding-top:4rem;padding-bottom:6rem;">
+  <div style="max-width:480px;margin:0 auto;">
+
+    <!-- Header -->
+    <div class="text-center mb-4" data-aos="fade-down">
+      <div style="width:64px;height:64px;background:var(--vert-fonce);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;font-size:1.6rem;">🌿</div>
+      <h1 style="font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--vert-fonce);margin-bottom:.3rem;">{% trans "Créer un compte" %}</h1>
+      <p style="color:var(--gris);font-size:.9rem;">{% trans "Accédez à vos commandes en un clin d'œil." %}</p>
+    </div>
+
+    <!-- Form card -->
+    <div class="form-card" data-aos="fade-up">
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <!-- Identifiant (email ou téléphone) -->
+        <div class="mb-3">
+          <label class="field-label" for="{{ form.identifiant.id_for_label }}">{{ form.identifiant.label }}</label>
+          {{ form.identifiant }}
+          {% if form.identifiant.errors %}
+          <div style="color:#991B1B;font-size:.78rem;margin-top:4px;">{{ form.identifiant.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3">
+          <label class="field-label" for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+          {{ form.password1 }}
+          {% if form.password1.errors %}
+          <div style="color:#991B1B;font-size:.78rem;margin-top:4px;">{{ form.password1.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Confirm password -->
+        <div class="mb-4">
+          <label class="field-label" for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+          {{ form.password2 }}
+          {% if form.password2.errors %}
+          <div style="color:#991B1B;font-size:.78rem;margin-top:4px;">{{ form.password2.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        {% if form.non_field_errors %}
+        <div style="background:#FEE2E2;color:#991B1B;padding:10px 14px;border-radius:var(--r-sm);font-size:.84rem;margin-bottom:1rem;">
+          {{ form.non_field_errors.0 }}
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn-primary w-100" style="justify-content:center;">
+          <i class="bi bi-person-plus"></i> {% trans "Créer mon compte" %}
+        </button>
+      </form>
+
+    </div>
+
+    <p class="text-center mt-3" style="font-size:.87rem;color:var(--gris);">
+      {% trans "Déjà un compte ?" %}
+      <a href="{% url 'comptes:connexion' %}" style="color:var(--vert);font-weight:600;">{% trans "Se connecter" %}</a>
+    </p>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,174 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}Commande #{{ commande.pk }} | Admin{% endblock %}
+
+{% block content_title %}
+<h1 style="font-size:1.4rem;margin:0;">
+  Commande <span style="color:#C8A96E;">#{{ commande.pk }}</span>
+  &mdash; {{ commande.nom }}
+</h1>
+{% endblock %}
+
+{% block content %}
+<style>
+  .det-grid   { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem; }
+  .det-card   { background:#fff; border-radius:10px; box-shadow:0 2px 12px rgba(0,0,0,.07); overflow:hidden; }
+  .det-head   { background:#F7F4EE; padding:.7rem 1.2rem; border-bottom:1px solid #E0D8CC;
+                font-weight:700; font-size:.85rem; color:#1B3829; }
+  .det-body   { padding:1.1rem 1.2rem; font-size:.88rem; color:#444; line-height:1.8; }
+  .det-body strong { color:#2A2A2A; }
+
+  .art-table  { width:100%; border-collapse:collapse; font-size:.87rem; }
+  .art-table th { background:#F7F4EE; padding:9px 12px; text-align:left; font-size:.72rem;
+                  letter-spacing:.6px; text-transform:uppercase; color:#7A7A7A;
+                  border-bottom:1px solid #E0D8CC; }
+  .art-table td { padding:10px 12px; border-bottom:1px solid #F0EDE6; vertical-align:middle; }
+  .art-table tbody tr:last-child td { border-bottom:none; }
+  .art-table tfoot td { padding:10px 12px; font-weight:700; border-top:2px solid #E0D8CC;
+                        color:#1B3829; }
+
+  .art-img    { width:44px; height:44px; border-radius:6px; object-fit:cover; }
+  .art-ph     { width:44px; height:44px; border-radius:6px; background:#F7F4EE;
+                display:inline-flex; align-items:center; justify-content:center; font-size:1.4rem; }
+
+  .statut-pill { display:inline-block; padding:4px 14px; border-radius:20px; font-size:.78rem; font-weight:700; }
+  .s-en_attente { background:#FEF3C7; color:#92400E; }
+  .s-en_cours   { background:#DBEAFE; color:#1E40AF; }
+  .s-prete      { background:#D1FAE5; color:#065F46; }
+  .s-livree     { background:#ECFDF5; color:#065F46; border:1px solid #A7F3D0; }
+  .s-annulee    { background:#FEE2E2; color:#991B1B; }
+
+  .back-btn { display:inline-flex; align-items:center; gap:6px; margin-bottom:1.2rem;
+              background:#1B3829; color:#fff; padding:7px 16px; border-radius:8px;
+              font-size:.82rem; font-weight:600; text-decoration:none; }
+  .back-btn:hover { background:#C8A96E; color:#fff; }
+
+  @media (max-width:700px) { .det-grid { grid-template-columns:1fr; } }
+</style>
+
+<a href="{% url 'admin:commandes_commande_changelist' %}" class="back-btn">← Retour à la liste</a>
+
+<!-- Statut -->
+<div style="margin-bottom:1.5rem;">
+  <span class="statut-pill s-{{ commande.statut }}">{{ commande.get_statut_display }}</span>
+  <span style="color:#7A7A7A;font-size:.82rem;margin-left:10px;">
+    Passée le {{ commande.created|date:"d/m/Y à H\hi" }}
+  </span>
+</div>
+
+<!-- Infos client + livraison -->
+<div class="det-grid">
+
+  <div class="det-card">
+    <div class="det-head">👤 Client</div>
+    <div class="det-body">
+      <strong>{{ commande.nom }}</strong><br>
+      📞 {{ commande.telephone }}<br>
+      {% if commande.adresse %}📍 {{ commande.adresse }}{% endif %}
+      {% if commande.note %}
+      <hr style="margin:.7rem 0;border:none;border-top:1px solid #E0D8CC;">
+      💬 <em>{{ commande.note }}</em>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="det-card">
+    <div class="det-head">
+      {% if commande.mode_livraison == 'livraison' %}🚚 Livraison à domicile{% else %}🏪 Retrait en magasin{% endif %}
+    </div>
+    <div class="det-body">
+      {% if commande.mode_livraison == 'livraison' %}
+        {% if commande.adresse %}
+          <strong>Adresse :</strong> {{ commande.adresse }}
+        {% else %}
+          <span style="color:#aaa;">Adresse non renseignée</span>
+        {% endif %}
+      {% else %}
+        {% if commande.heure_retrait %}
+          <strong>Heure de passage :</strong> {{ commande.heure_retrait|time:"H\hi" }}
+        {% else %}
+          <span style="color:#aaa;">Heure non renseignée</span>
+        {% endif %}
+      {% endif %}
+      <hr style="margin:.7rem 0;border:none;border-top:1px solid #E0D8CC;">
+      <strong>Sous-total :</strong> {{ commande.sous_total }}&nbsp;{{ currency }}<br>
+      {% if commande.frais_livraison %}
+      <strong>Frais de livraison :</strong> <span style="color:#1565c0;">+{{ commande.frais_livraison }}&nbsp;{{ currency }}</span><br>
+      {% endif %}
+      <strong>Total :</strong> <span style="font-size:1.05rem;color:#1B3829;font-weight:800;">{{ commande.total }}&nbsp;{{ currency }}</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Articles -->
+<div class="det-card">
+  <div class="det-head">🛍️ Articles commandés ({{ commande.lignes.count }} produit{{ commande.lignes.count|pluralize }})</div>
+  <div style="padding:0;">
+    <table class="art-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Produit</th>
+          <th>Prix unitaire</th>
+          <th>Quantité</th>
+          <th style="text-align:right;">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ligne in commande.lignes.all %}
+        <tr>
+          <td>
+            {% if ligne.produit and ligne.produit.image %}
+              <img src="{{ ligne.produit.image.url }}" alt="{{ ligne.nom_produit }}" class="art-img">
+            {% else %}
+              <span class="art-ph">🛍️</span>
+            {% endif %}
+          </td>
+          <td>
+            <strong>{{ ligne.nom_produit }}</strong>
+            {% if ligne.produit %}
+            <br><span style="font-size:.75rem;color:#7A7A7A;">{{ ligne.produit.categorie }}</span>
+            {% endif %}
+          </td>
+          <td>{{ ligne.prix_unitaire }}&nbsp;{{ currency }}</td>
+          <td>× {{ ligne.quantite }}</td>
+          <td style="text-align:right;font-weight:700;color:#1B3829;">{{ ligne.total_ligne }}&nbsp;{{ currency }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;color:#aaa;padding:1.5rem;">Aucun article.</td></tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4" style="text-align:right;">Sous-total</td>
+          <td style="text-align:right;">{{ commande.sous_total }}&nbsp;{{ currency }}</td>
+        </tr>
+        {% if commande.frais_livraison %}
+        <tr>
+          <td colspan="4" style="text-align:right;font-weight:400;color:#1565c0;">Frais de livraison</td>
+          <td style="text-align:right;color:#1565c0;">+{{ commande.frais_livraison }}&nbsp;{{ currency }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+          <td colspan="4" style="text-align:right;font-size:1.05rem;">TOTAL</td>
+          <td style="text-align:right;font-size:1.1rem;color:#1B3829;">{{ commande.total }}&nbsp;{{ currency }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<!-- Lien de modification rapide -->
+<div style="margin-top:1.2rem;display:flex;gap:10px;flex-wrap:wrap;">
+  <a href="{% url 'admin:commandes_commande_change' commande.pk %}"
+     style="background:#555;color:#fff;padding:7px 16px;border-radius:8px;font-size:.82rem;font-weight:600;text-decoration:none;">
+    ✏️ Modifier la commande
+  </a>
+  <a href="{{ commande.get_absolute_url }}" target="_blank"
+     style="background:#C8A96E;color:#fff;padding:7px 16px;border-radius:8px;font-size:.82rem;font-weight:600;text-decoration:none;">
+    🔗 Lien de suivi client
+  </a>
+</div>
+{% endblock %}

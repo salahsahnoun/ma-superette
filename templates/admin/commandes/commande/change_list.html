@@ -1,0 +1,18 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="statut-tabs">
+  {% for tab in tabs_statut %}
+  <a href="{{ tab.url }}"
+     class="statut-tab {% if tab.actif %}actif{% endif %}">
+    <span>{{ tab.icone }}</span>
+    <span>{{ tab.label }}</span>
+    <span class="tab-count">{{ tab.count }}</span>
+  </a>
+  {% endfor %}
+</div>
+
+{{ block.super }}
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Mon compte" %} — Ma Superette{% endblock %}
+
+{% block content %}
+<div class="site-container" style="padding-top:2.5rem;padding-bottom:5rem;">
+
+  <div class="d-flex align-items-center gap-3 mb-4" data-aos="fade-right">
+    <div style="width:56px;height:56px;background:var(--vert-fonce);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">👤</div>
+    <div>
+      <h1 style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--vert-fonce);margin:0;">
+        {% trans "Bonjour," %} <span style="color:var(--or);">{{ user.username }}</span>
+      </h1>
+      <p style="color:var(--gris);font-size:.85rem;margin:0;">{{ user.email }}</p>
+    </div>
+    <div class="ms-auto">
+      <form method="post" action="{% url 'comptes:deconnexion' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-outline" style="color:#991B1B;border-color:#FECACA;">
+          <i class="bi bi-box-arrow-right"></i> {% trans "Déconnexion" %}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;" data-aos="fade-up">
+    <div class="order-receipt">
+      <div class="receipt-body text-center">
+        <div style="font-size:1.8rem;font-weight:700;font-family:'Playfair Display',serif;color:var(--vert-fonce);">{{ commandes.count }}</div>
+        <div style="font-size:.8rem;color:var(--gris);">{% trans "Commande(s)" %}</div>
+      </div>
+    </div>
+    <div class="order-receipt">
+      <div class="receipt-body text-center">
+        <div style="font-size:1.8rem;font-weight:700;font-family:'Playfair Display',serif;color:var(--vert-fonce);">{{ total_depense }}&nbsp;{{ currency }}</div>
+        <div style="font-size:.8rem;color:var(--gris);">{% trans "Total dépensé" %}</div>
+      </div>
+    </div>
+  </div>
+
+  <div data-aos="fade-up" data-aos-delay="80">
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--vert-fonce);margin-bottom:1.2rem;">
+      <i class="bi bi-bag me-2"></i>{% trans "Mes commandes" %}
+    </h2>
+
+    {% if commandes %}
+    <div style="display:flex;flex-direction:column;gap:.8rem;">
+      {% for cmd in commandes %}
+      <div class="order-receipt" style="margin-bottom:0;">
+        <div class="receipt-body" style="padding:1rem 1.5rem;">
+          <div class="d-flex align-items-center flex-wrap gap-3">
+
+            <div>
+              <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--vert-fonce);">
+                {% trans "Commande" %} <span style="color:var(--or);">#{{ cmd.pk }}</span>
+              </div>
+              <div style="font-size:.78rem;color:var(--gris);">{{ cmd.created|date:"d/m/Y à H\hi" }}</div>
+            </div>
+
+            <div>
+              {% if cmd.statut == 'en_attente' %}<span class="suivi-badge badge-attente">⏳ {% trans "En attente" %}</span>
+              {% elif cmd.statut == 'en_cours' %}<span class="suivi-badge badge-cours">⚙️ {% trans "En cours" %}</span>
+              {% elif cmd.statut == 'prete' %}<span class="suivi-badge badge-prete">✅ {% trans "Prête" %}</span>
+              {% elif cmd.statut == 'livree' %}<span class="suivi-badge badge-livree">🎉 {% trans "Livrée" %}</span>
+              {% elif cmd.statut == 'annulee' %}<span class="suivi-badge badge-annulee">❌ {% trans "Annulée" %}</span>
+              {% endif %}
+            </div>
+
+            <div style="font-size:.82rem;color:var(--gris);">
+              {% if cmd.mode_livraison == 'livraison' %}🚚 {% trans "Livraison" %}{% else %}🏪 {% trans "Retrait" %}{% endif %}
+            </div>
+
+            <div style="font-size:.82rem;color:var(--gris);">
+              {% blocktrans with n=cmd.lignes.count %}{{ n }} article(s){% endblocktrans %}
+            </div>
+
+            <div class="ms-auto d-flex align-items-center gap-3">
+              <span style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--vert-fonce);">{{ cmd.total }}&nbsp;{{ currency }}</span>
+              <a href="{% url 'commandes:suivi' cmd.pk %}" class="btn-outline" style="padding:7px 14px;font-size:.82rem;">
+                <i class="bi bi-eye"></i> {% trans "Voir" %}
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+      <span class="empty-icon">🛍️</span>
+      <p style="font-size:1rem;margin-bottom:1rem;">{% trans "Vous n'avez pas encore de commande." %}</p>
+      <a href="{% url 'produits:liste' %}" class="btn-primary">
+        <i class="bi bi-bag"></i> {% trans "Faire mes courses" %}
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,327 @@
+/* ═══════════════════════════════════════════════
+   Ma Superette — Admin custom overrides (Jazzmin)
+   ═══════════════════════════════════════════════ */
+
+:root {
+  --vert:      #1B3829;
+  --vert-med:  #2D5A3D;
+  --or:        #C8A96E;
+  --creme:     #F7F4EE;
+  --bordure:   #DEE2E6;
+}
+
+/* ── Brand / sidebar ─────────────────────────── */
+.brand-link {
+  font-size: 1.05rem !important;
+  letter-spacing: .3px;
+  padding: 16px 14px !important;
+}
+
+.sidebar-dark-success .nav-sidebar > .nav-item > .nav-link.active {
+  background: var(--or) !important;
+  color: #fff !important;
+}
+
+.sidebar-dark-success .nav-sidebar > .nav-item > .nav-link:hover {
+  background: rgba(200,169,110,.15) !important;
+}
+
+/* ── Navbar top ──────────────────────────────── */
+.main-header.navbar {
+  border-bottom: 2px solid var(--or) !important;
+}
+
+/* ── Content area ────────────────────────────── */
+.content-wrapper {
+  background: #f4f6f9 !important;
+}
+
+/* ── Cards / boxes ───────────────────────────── */
+.card {
+  border: none !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,.07) !important;
+  border-radius: 10px !important;
+}
+
+.card-header {
+  background: #fff !important;
+  border-bottom: 1px solid var(--bordure) !important;
+  font-weight: 600 !important;
+  border-radius: 10px 10px 0 0 !important;
+}
+
+/* ── Onglets de statut (commandes) ───────────── */
+.statut-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px 0 20px;
+  border-bottom: 2px solid var(--bordure);
+  margin-bottom: 20px;
+}
+
+.statut-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 24px;
+  font-size: .82rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid var(--bordure);
+  background: #fff;
+  color: #555;
+  transition: all .2s;
+}
+
+.statut-tab:hover {
+  border-color: var(--vert-med);
+  color: var(--vert-med);
+  text-decoration: none;
+}
+
+.statut-tab.actif {
+  background: var(--vert) !important;
+  border-color: var(--vert) !important;
+  color: #fff !important;
+}
+
+.statut-tab .tab-count {
+  background: rgba(255,255,255,.25);
+  color: inherit;
+  border-radius: 12px;
+  padding: 1px 8px;
+  font-size: .74rem;
+  min-width: 24px;
+  text-align: center;
+}
+
+.statut-tab:not(.actif) .tab-count {
+  background: #e9ecef;
+  color: #666;
+}
+
+/* ── Tables ──────────────────────────────────── */
+#result_list {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#result_list thead th {
+  background: var(--vert) !important;
+  color: #fff !important;
+  font-size: .76rem !important;
+  letter-spacing: .7px !important;
+  text-transform: uppercase !important;
+  border: none !important;
+  padding: 12px 14px !important;
+}
+
+#result_list thead th a,
+#result_list thead th a:visited {
+  color: #fff !important;
+}
+
+#result_list thead th.sorted a {
+  color: var(--or) !important;
+}
+
+#result_list tbody tr:hover td {
+  background: #f0f4f2 !important;
+}
+
+#result_list tbody td {
+  vertical-align: middle !important;
+  padding: 12px 14px !important;
+  border-color: #f0f0f0 !important;
+}
+
+/* ── Buttons ─────────────────────────────────── */
+.btn-success, .submit-row input[type=submit] {
+  background: var(--vert) !important;
+  border-color: var(--vert) !important;
+}
+
+.btn-success:hover {
+  background: var(--vert-med) !important;
+}
+
+/* ── Save buttons row ────────────────────────── */
+.submit-row {
+  background: #f8f9fa !important;
+  border-top: 1px solid var(--bordure) !important;
+  border-radius: 0 0 10px 10px !important;
+  padding: 12px 16px !important;
+}
+
+/* ── Fieldset ────────────────────────────────── */
+.module h2 {
+  background: var(--vert) !important;
+  color: #fff !important;
+  font-size: .82rem !important;
+  letter-spacing: .8px !important;
+  text-transform: uppercase !important;
+  padding: 8px 14px !important;
+  border-radius: 6px 6px 0 0 !important;
+}
+
+/* ── Inline tables ───────────────────────────── */
+.inline-related h3 {
+  background: #f0f4f2 !important;
+  border-left: 3px solid var(--vert) !important;
+  padding: 8px 12px !important;
+  font-size: .85rem !important;
+}
+
+/* ── Dashboard info boxes ────────────────────── */
+.small-box {
+  border-radius: 10px !important;
+}
+
+.small-box > .inner { padding: 14px !important; }
+
+/* ── Pagination ──────────────────────────────── */
+.paginator a, .paginator span {
+  border-radius: 6px !important;
+  padding: 4px 10px !important;
+}
+
+/* ── Login page ──────────────────────────────── */
+.login-page { background: var(--vert) !important; }
+
+.login-logo {
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.login-card-body {
+  border-radius: 14px !important;
+  padding: 2rem !important;
+}
+
+.login-card-body .btn-primary {
+  background: var(--vert) !important;
+  border-color: var(--vert) !important;
+  width: 100% !important;
+  padding: 10px !important;
+  font-weight: 600 !important;
+}
+
+/* ── Navbar (fond blanc) ─────────────────────── */
+
+/* Liens de la top-navbar en noir */
+.main-header .navbar-nav > .nav-item > .nav-link,
+.main-header .navbar-nav > .nav-item > .nav-link:hover {
+  color: #1B3829 !important;
+  font-weight: 500;
+}
+.main-header .navbar-nav > .nav-item > .nav-link:hover {
+  color: #C8A96E !important;
+}
+
+/* Dropdowns de la top-navbar */
+.main-header .navbar-nav .dropdown-menu {
+  background: #fff !important;
+  border: 1px solid #dee2e6 !important;
+}
+.main-header .navbar-nav .dropdown-item,
+.main-header .navbar-nav .dropdown-item * {
+  color: #333 !important;
+}
+.main-header .navbar-nav .dropdown-item:hover {
+  background: #f4f6f9 !important;
+  color: #1B3829 !important;
+}
+
+/* Inputs et selects dans le contenu */
+.content-wrapper input[type=text],
+.content-wrapper input[type=email],
+.content-wrapper input[type=number],
+.content-wrapper input[type=password],
+.content-wrapper input[type=time],
+.content-wrapper input[type=date],
+.content-wrapper textarea,
+.content-wrapper select {
+  color: #333 !important;
+  background: #fff !important;
+}
+
+/* Select éditable dans la liste (list_editable) */
+#result_list select,
+#result_list input {
+  color: #333 !important;
+  background: #fff !important;
+  border: 1px solid #ced4da !important;
+  border-radius: 4px !important;
+  padding: 3px 6px !important;
+}
+
+/* Breadcrumb */
+.content-header .breadcrumb-item,
+.content-header .breadcrumb-item a,
+.content-header .breadcrumb-item.active {
+  color: #555 !important;
+}
+
+/* ── Filter sidebar ──────────────────────────── */
+#changelist-filter {
+  background: #fff !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--bordure) !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+#changelist-filter h2 {
+  background: var(--vert) !important;
+  color: #fff !important;
+  padding: 10px 14px !important;
+  font-size: .8rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: .6px !important;
+  margin: 0 !important;
+}
+
+#changelist-filter h3 {
+  padding: 8px 14px 4px !important;
+  font-size: .78rem !important;
+  text-transform: uppercase !important;
+  color: #888 !important;
+  letter-spacing: .5px !important;
+  margin: 0 !important;
+}
+
+#changelist-filter ul {
+  padding: 4px 14px 12px !important;
+  margin: 0 !important;
+  list-style: none !important;
+}
+
+#changelist-filter li a {
+  font-size: .84rem !important;
+  color: #555 !important;
+  padding: 2px 0 !important;
+  display: block !important;
+}
+
+#changelist-filter li.selected a {
+  color: var(--vert) !important;
+  font-weight: 600 !important;
+}
+
+/* ── Search bar ──────────────────────────────── */
+#changelist-search input[type=text] {
+  border-radius: 6px 0 0 6px !important;
+  border: 1.5px solid var(--bordure) !important;
+}
+
+#changelist-search input[type=submit] {
+  background: var(--vert) !important;
+  color: #fff !important;
+  border-radius: 0 6px 6px 0 !important;
+  border: none !important;
+  padding: 6px 14px !important;
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "model": "produits.categorie",
+    "pk": 1,
+    "fields": { "nom": "Légumes & Fruits", "slug": "legumes-fruits", "icone": "🥦" }
+  },
+  {
+    "model": "produits.categorie",
+    "pk": 2,
+    "fields": { "nom": "Conserves", "slug": "conserves", "icone": "🥫" }
+  },
+  {
+    "model": "produits.categorie",
+    "pk": 3,
+    "fields": { "nom": "Produits ménagers", "slug": "produits-menagers", "icone": "🧹" }
+  },
+  {
+    "model": "produits.categorie",
+    "pk": 4,
+    "fields": { "nom": "Gâteaux & Snacks", "slug": "gateaux-snacks", "icone": "🍪" }
+  },
+  {
+    "model": "produits.categorie",
+    "pk": 5,
+    "fields": { "nom": "Autres", "slug": "autres", "icone": "📦" }
+  }
+]

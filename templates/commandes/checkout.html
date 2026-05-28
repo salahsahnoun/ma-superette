@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Finaliser la commande" %} — Ma Superette{% endblock %}
+
+{% block content %}
+<div class="site-container checkout-wrap">
+
+  <h1 class="page-heading" data-aos="fade-right">
+    <i class="bi bi-bag-check me-2"></i>{% trans "Finaliser la commande" %}
+  </h1>
+
+  <div class="row g-4">
+
+    <!-- ── Formulaire ──────────────────────────── -->
+    <div class="col-lg-7">
+      <form method="post" id="checkout-form">
+        {% csrf_token %}
+
+        <div class="form-card" data-aos="fade-up">
+          <div class="form-card-title">
+            <i class="bi bi-person-circle"></i> {% trans "Vos informations" %}
+          </div>
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="field-label">{{ form.nom.label }}</label>
+              {{ form.nom }}
+              {% if form.nom.errors %}<div class="text-danger small mt-1">{{ form.nom.errors }}</div>{% endif %}
+            </div>
+            <div class="col-sm-6">
+              <label class="field-label">{{ form.telephone.label }}</label>
+              {{ form.telephone }}
+              {% if form.telephone.errors %}<div class="text-danger small mt-1">{{ form.telephone.errors }}</div>{% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-card" data-aos="fade-up" data-aos-delay="80">
+          <div class="form-card-title">
+            <i class="bi bi-truck"></i> {% trans "Mode de récupération" %}
+          </div>
+
+          <div class="mode-grid">
+            <label class="mode-card" id="card-livraison">
+              <input type="radio" name="mode_livraison" value="livraison"
+                     {% if not form.mode_livraison.value or form.mode_livraison.value == 'livraison' %}checked{% endif %}
+                     onchange="updateMode()">
+              <span class="mode-emoji">🚚</span>
+              <span class="mode-label">{% trans "Livraison à domicile" %}</span>
+              <span class="mode-price">+{{ frais_livraison }}&nbsp;{{ currency }}</span>
+              <span class="mode-note">{% trans "Livré chez vous" %}</span>
+            </label>
+
+            <label class="mode-card" id="card-retrait">
+              <input type="radio" name="mode_livraison" value="retrait"
+                     {% if form.mode_livraison.value == 'retrait' %}checked{% endif %}
+                     onchange="updateMode()">
+              <span class="mode-emoji">🏪</span>
+              <span class="mode-label">{% trans "Retrait en magasin" %}</span>
+              <span class="mode-price">{% trans "Gratuit" %}</span>
+              <span class="mode-note">{% trans "Commande prête à votre heure" %}</span>
+            </label>
+          </div>
+
+          <div id="group-adresse">
+            <label class="field-label">{{ form.adresse.label }}</label>
+            {{ form.adresse }}
+            {% if form.adresse.errors %}<div class="text-danger small mt-1">{{ form.adresse.errors }}</div>{% endif %}
+          </div>
+
+          <div id="group-heure" style="display:none;">
+            <label class="field-label">{{ form.heure_retrait.label }}</label>
+            <div class="d-flex align-items-center gap-3">
+              {{ form.heure_retrait }}
+              <small style="color:var(--gris);">{% trans "La commande sera prête avant votre arrivée" %}</small>
+            </div>
+            {% if form.heure_retrait.errors %}<div class="text-danger small mt-1">{{ form.heure_retrait.errors }}</div>{% endif %}
+          </div>
+        </div>
+
+        <div class="form-card" data-aos="fade-up" data-aos-delay="160">
+          <div class="form-card-title">
+            <i class="bi bi-chat-left-text"></i> {% trans "Note (optionnel)" %}
+          </div>
+          {{ form.note }}
+        </div>
+
+        <div data-aos="fade-up" data-aos-delay="200">
+          <button type="submit" class="btn-primary w-100" style="border-radius:var(--r);padding:15px;font-size:1rem;">
+            <i class="bi bi-check-circle"></i> {% trans "Confirmer la commande" %}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ── Order summary ──────────────────────── -->
+    <div class="col-lg-5" data-aos="fade-up" data-aos-delay="100">
+      <div class="order-summary-box">
+        <h5>{% trans "Votre commande" %}</h5>
+
+        {% for item in panier %}
+        <div class="order-line">
+          <div>
+            <div class="order-line-name">{{ item.produit.nom }}</div>
+            <div class="order-line-qty">× {{ item.quantite }}</div>
+          </div>
+          <span>{{ item.total_ligne }}&nbsp;{{ currency }}</span>
+        </div>
+        {% endfor %}
+
+        <div class="summary-row mt-3">
+          <span style="color:var(--texte);">{% trans "Sous-total" %}</span>
+          <span>{{ panier.total }}&nbsp;{{ currency }}</span>
+        </div>
+        <div class="summary-row" id="row-frais">
+          <span style="color:var(--texte);">{% trans "Livraison" %}</span>
+          <span style="color:var(--vert-clair);font-weight:600;" id="val-frais">+{{ frais_livraison }}&nbsp;{{ currency }}</span>
+        </div>
+        <div class="summary-row" id="row-retrait" style="display:none;">
+          <span style="color:var(--texte);">{% trans "Livraison" %}</span>
+          <span class="tag-free">{% trans "Gratuite" %}</span>
+        </div>
+        <div class="summary-row total">
+          <span>{% trans "Total" %}</span>
+          <span id="val-total">{{ panier.total }}&nbsp;{{ currency }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const sousTotal = {{ panier.total|stringformat:".2f" }};
+const frais     = {{ frais_livraison|stringformat:".2f" }};
+
+function updateMode() {
+  const mode = document.querySelector('input[name="mode_livraison"]:checked').value;
+
+  document.getElementById('card-livraison').classList.toggle('selected', mode === 'livraison');
+  document.getElementById('card-retrait').classList.toggle('selected',   mode === 'retrait');
+
+  document.getElementById('group-adresse').style.display = mode === 'livraison' ? 'block' : 'none';
+  document.getElementById('group-heure').style.display   = mode === 'retrait'   ? 'block' : 'none';
+
+  document.getElementById('row-frais').style.display   = mode === 'livraison' ? 'flex' : 'none';
+  document.getElementById('row-retrait').style.display = mode === 'retrait'   ? 'flex' : 'none';
+
+  const total = mode === 'livraison' ? sousTotal + frais : sousTotal;
+  document.getElementById('val-total').textContent = total.toFixed(2) + ' {{ currency }}';
+}
+
+document.addEventListener('DOMContentLoaded', updateMode);
+</script>
+{% endblock %}
