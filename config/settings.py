@@ -9,6 +9,7 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(','
 
 INSTALLED_APPS = [
     'jazzmin',                           # doit être avant django.contrib.admin
+    'modeltranslation',                  # doit être avant django.contrib.admin
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -202,7 +203,7 @@ JAZZMIN_SETTINGS = {
 
     # CSS/JS custom
     "custom_css": "css/admin_custom.css",
-    "custom_js":  None,
+    "custom_js":  "js/admin_camera.js",
 
     "use_google_fonts_cdn": False,
     "show_ui_builder":      False,
